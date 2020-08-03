@@ -1,8 +1,5 @@
 //> Chunks of Bytecode debug-c
 #include <stdio.h>
-//> Methods and Initializers not-yet
-#include <string.h>
-//< Methods and Initializers not-yet
 
 #include "debug.h"
 //> Closures debug-include-object
@@ -31,17 +28,17 @@ static int constantInstruction(const char* name, Chunk* chunk,
 //< return-after-operand
 }
 //< constant-instruction
-//> Methods and Initializers not-yet
+//> Methods and Initializers invoke-instruction
 static int invokeInstruction(const char* name, Chunk* chunk,
                                 int offset) {
-  uint8_t argCount = chunk->code[offset + 1];
-  uint8_t constant = chunk->code[offset + 2];
+  uint8_t constant = chunk->code[offset + 1];
+  uint8_t argCount = chunk->code[offset + 2];
   printf("%-16s (%d args) %4d '", name, argCount, constant);
   printValue(chunk->constants.values[constant]);
   printf("'\n");
-  return offset + 2;
+  return offset + 3;
 }
-//< Methods and Initializers not-yet
+//< Methods and Initializers invoke-instruction
 //> simple-instruction
 static int simpleInstruction(const char* name, int offset) {
   printf("%s\n", name);
@@ -123,10 +120,10 @@ int disassembleInstruction(Chunk* chunk, int offset) {
     case OP_SET_PROPERTY:
       return constantInstruction("OP_SET_PROPERTY", chunk, offset);
 //< Classes and Instances disassemble-property-ops
-//> Superclasses not-yet
+//> Superclasses disassemble-get-super
     case OP_GET_SUPER:
       return constantInstruction("OP_GET_SUPER", chunk, offset);
-//< Superclasses not-yet
+//< Superclasses disassemble-get-super
 //> Types of Values disassemble-comparison
     case OP_EQUAL:
       return simpleInstruction("OP_EQUAL", offset);
@@ -171,14 +168,14 @@ int disassembleInstruction(Chunk* chunk, int offset) {
     case OP_CALL:
       return byteInstruction("OP_CALL", chunk, offset);
 //< Calls and Functions disassemble-call
-//> Methods and Initializers not-yet
+//> Methods and Initializers disassemble-invoke
     case OP_INVOKE:
       return invokeInstruction("OP_INVOKE", chunk, offset);
-//< Methods and Initializers not-yet
-//> Superclasses not-yet
-    case OP_SUPER:
-      return invokeInstruction("OP_SUPER_", chunk, offset);
-//< Superclasses not-yet
+//< Methods and Initializers disassemble-invoke
+//> Superclasses disassemble-super-invoke
+    case OP_SUPER_INVOKE:
+      return invokeInstruction("OP_SUPER_INVOKE", chunk, offset);
+//< Superclasses disassemble-super-invoke
 //> Closures disassemble-closure
     case OP_CLOSURE: {
       offset++;
@@ -211,14 +208,14 @@ int disassembleInstruction(Chunk* chunk, int offset) {
     case OP_CLASS:
       return constantInstruction("OP_CLASS", chunk, offset);
 //< Classes and Instances disassemble-class
-//> Superclasses not-yet
+//> Superclasses disassemble-inherit
     case OP_INHERIT:
       return simpleInstruction("OP_INHERIT", offset);
-//< Superclasses not-yet
-//> Methods and Initializers not-yet
+//< Superclasses disassemble-inherit
+//> Methods and Initializers disassemble-method
     case OP_METHOD:
       return constantInstruction("OP_METHOD", chunk, offset);
-//< Methods and Initializers not-yet
+//< Methods and Initializers disassemble-method
     default:
       printf("Unknown opcode %d\n", instruction);
       return offset + 1;

@@ -1,6 +1,3 @@
-^title Garbage Collection
-^part A Bytecode Virtual Machine
-
 > I wanna, I wanna,<br>
 > I wanna, I wanna,<br>
 > I wanna be trash.<br>
@@ -98,9 +95,9 @@ var global = "string";
 ```
 
 Pause the program right after the two strings have been concatenated but before
-the print statement has executed. The VM can reach `"string"` by looking through
-the global variable table and finding the entry for `global`. It can find
-`"another"` by walking the value stack and hitting the slot for the local
+the `print` statement has executed. The VM can reach `"string"` by looking
+through the global variable table and finding the entry for `global`. It can
+find `"another"` by walking the value stack and hitting the slot for the local
 variable `local`. It can even find the concatenated string `"stringanother"`
 since that temporary value is also sitting on the VM's stack at the point when
 we paused our program.
@@ -431,7 +428,7 @@ It's declared here:
 
 Which means the "memory" module needs an include:
 
-^code memory-include-compiler (1 before, 1 after)
+^code memory-include-compiler (2 before, 1 after)
 
 And the definition is over in the "compiler" module:
 
@@ -503,7 +500,7 @@ object is in and what work is left to do.
 
 Advanced garbage collection algorithms often add other colors to the
 abstraction. I've seen multiple shades of gray and even purple in some designs.
-My puce-chartreuse-fuschia-malachite collector paper was, alas, not accepted for
+My puce-chartreuse-fuchsia-malachite collector paper was, alas, not accepted for
 publication.
 
 </aside>
@@ -601,7 +598,7 @@ OK, now when we're done marking the roots we have both set a bunch of fields
 and filled our work list with objects to chew through. It's time for the next
 phase:
 
-^code call-trace-references (1 before, 1 after)
+^code call-trace-references (1 before, 2 after)
 
 Here's the implementation:
 
@@ -698,14 +695,14 @@ either black or white. The black objects are reachable and we want to hang on to
 them. Anything still white never got touched by the trace and is thus garbage.
 All that's left is to reclaim them:
 
-^code call-sweep (1 before, 1 after)
+^code call-sweep (1 before, 2 after)
 
 All of the logic lives in one function:
 
 ^code sweep
 
 I know that's kind of a lot of code and pointer shenanigans but there isn't much
-to it once you work through it. The outer while loop walks the linked list of
+to it once you work through it. The outer `while` loop walks the linked list of
 every object in the heap, checking their mark bits. If an object is unmarked
 (white), we unlink it from the list and free it using the `freeObject()`
 function we already wrote.
